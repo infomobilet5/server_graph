@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<canvas id="speedChart"  width="140px" height="50px"></canvas> 
+	<script src="jquery.js"></script>
+	<script src="chart.js"></script>
+	<script src="socket.io.js"></script>
+	<script>
+	
+	var socket = io.connect("http://127.0.0.1:8080");
+	var speedCanvas = document.getElementById("speedChart");
+	
+	var lineChart = new Chart(speedCanvas, {
+		type: 'line',
+		data: {
+			labels: ["7am", "8am", "9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm"],
+			datasets: [
+				{
+					label: "Yesterday (sales)",
+					data: [0, 59, 75, 20, 20, 55, 40, 30, 30, 21, 22, 11, 70],
+					lineTension: 0.1,
+					fill: false,
+					//borderColor: '#6addf7',
+					borderColor: '#9E9E9E',
+					backgroundColor: 'transparent',
+					pointBorderColor: 'red',
+					pointBackgroundColor: '#424344',
+					pointRadius: 2,
+					pointHoverRadius: 15,
+					pointHitRadius: 10,
+					pointBorderWidth: 2,
+					pointStyle: 'rect', 
+					borderWidth:2,
+				}, 
+				{
+					label: "Today (sales)",
+					data:  [],
+					lineTension: 0.1,
+					fill: false,
+					//borderColor: '#98ca00',
+					borderColor: '#424344',
+					backgroundColor: 'transparent',
+					pointBorderColor: 'purple',
+					pointBackgroundColor: '#9E9E9E',
+					pointRadius: 2,
+					pointHoverRadius: 15,
+					pointHitRadius: 30,
+					pointBorderWidth: 2,
+					borderWidth:2,
+				}
+			]
+		},
+		options: {
+			legend: {
+				labels: {
+					fontFamily: 'Helvetica'
+				},
+			},
+		scales: {
+			yAxes: [
+				{ticks: {fontFamily: 'Helvetica'}}
+			], 
+			xAxes: [
+				{ticks: {fontFamily: 'Helvetica'}}
+			]
+		}
+	  }
+});
+function updateChartData(chart, info, dataSetIndex){
+	chart.data.datasets[dataSetIndex].data.push(info);
+	chart.update();
+}
+socket.on("new data", function(info){
+	updateChartData(lineChart, info, 1);
+	console.log(info);
+});
+
+/*
+	var socket = require('socket.io');
+		const app = express();
+		var server = app.listen(process.env.PORT || '8080', ()=> {
+			console.log(`Server is running on port: ${process.env.PORT || '8080'}`);
+		});
+	var io = socket(server);
+	//simulating data from the server emitted every 30 seconds
+	var dataStream =  [11, 17, 33, 21, 20, 31, 11, 72, 44, 88, 120, 31, 200]
+	var count = 0
+	io.sockets.on("connection", function(socket){
+		setInterval(function(){
+			io.sockets.emit("new data", dataStream[count]);
+			count++;
+		}, 30000);
+		console.log(socket.id);
+		//io.socket.emit("userJoinedTheAppService", socket.id);
+	});
+*/
+
+	</script>
+	</body>
+</html>
